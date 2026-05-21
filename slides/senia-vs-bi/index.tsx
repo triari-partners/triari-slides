@@ -35,8 +35,8 @@ const palette = {
   textMuted: 'rgba(10,42,28,0.52)',
   border: 'rgba(10,42,28,0.10)',
   borderDark: 'rgba(255,255,255,0.14)',
-  warn: '#E89A6A',
-  warnSoft: 'rgba(232,154,106,0.18)',
+  warn: 'rgba(10,42,28,0.52)',
+  warnSoft: 'rgba(10,42,28,0.10)',
 };
 
 const font = {
@@ -72,8 +72,8 @@ const styles = `
     to   { transform: rotate(360deg); }
   }
   @keyframes sv-pulseWarn {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(232,154,106,0.55); }
-    50%      { box-shadow: 0 0 0 14px rgba(232,154,106,0); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(10,42,28,0.35); }
+    50%      { box-shadow: 0 0 0 14px rgba(10,42,28,0); }
   }
   @keyframes sv-dashflow {
     to { stroke-dashoffset: -40; }
@@ -158,7 +158,7 @@ const Flywheel = ({
 }) => {
   const cx = size / 2;
   const cy = size / 2;
-  const r = size * 0.36;
+  const r = size * 0.405;
   const nodeR = size * 0.094;
 
   const baseStroke = dark ? 'rgba(255,255,255,0.18)' : 'rgba(10,42,28,0.18)';
@@ -203,7 +203,7 @@ const Flywheel = ({
 
   const nodeFill = (s: NodeState) => {
     if (s === 'on') return dark ? palette.mint : palette.mint;
-    if (s === 'stuck') return dark ? palette.warnSoft : '#F8D8C5';
+    if (s === 'stuck') return dark ? palette.warnSoft : 'rgba(10,42,28,0.10)';
     return dark ? 'rgba(255,255,255,0.06)' : 'rgba(10,42,28,0.04)';
   };
   const nodeStroke = (s: NodeState) => {
@@ -249,7 +249,7 @@ const Flywheel = ({
       viewBox={`0 0 ${size} ${size}`}
       width={size}
       height={size}
-      style={{ display: 'block' }}
+      style={{ display: 'block', overflow: 'visible' }}
     >
       {/* Soft halo behind the wheel when learning is highlighted */}
       {highlightLearning && (
@@ -584,6 +584,7 @@ const StuckPanel = ({
         letterSpacing: '0.14em',
         textTransform: 'uppercase',
         color: palette.warn,
+        fontWeight: 600,
       }}
     >
       <span
@@ -596,7 +597,7 @@ const StuckPanel = ({
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontWeight: 600,
+          fontWeight: 700,
           fontSize: 16,
         }}
       >
@@ -1318,21 +1319,65 @@ const McpDiagram = () => {
         </text>
       </g>
 
-      {/* MCP → each system */}
+      {/*
+        MCP → systems: route through a vertical manifold just before the grid
+        so connector lines never cross other cards on their way to a target.
+        Connector layer is rendered first, then all cards on top, so the
+        terminating segment never visually intrudes on the destination card.
+      */}
+      {(() => {
+        const trunkX = gridLeft - 36;
+        const topCardY = gridTop + cellH / 2;
+        const bottomCardY = gridTop + cellH + rowGap + cellH / 2;
+        const lineColor = 'rgba(10,42,28,0.28)';
+        return (
+          <g>
+            {/* MCP right edge → trunk */}
+            <line
+              x1={mcpRight}
+              y1={seniaCy}
+              x2={trunkX}
+              y2={seniaCy}
+              stroke={lineColor}
+              strokeWidth={1.5}
+              strokeDasharray="4 6"
+            />
+            {/* Vertical trunk between the two row centers */}
+            <line
+              x1={trunkX}
+              y1={topCardY}
+              x2={trunkX}
+              y2={bottomCardY}
+              stroke={lineColor}
+              strokeWidth={1.5}
+              strokeDasharray="4 6"
+            />
+            {/* Branches into each card's left edge */}
+            {systems.map((sys, i) => {
+              const x = gridLeft + sys.col * (cellW + colGap) + cellW / 2;
+              const y = gridTop + sys.row * (cellH + rowGap) + cellH / 2;
+              return (
+                <line
+                  key={`branch-${i}`}
+                  x1={trunkX}
+                  y1={y}
+                  x2={x - cellW / 2}
+                  y2={y}
+                  stroke={lineColor}
+                  strokeWidth={1.5}
+                  strokeDasharray="4 6"
+                />
+              );
+            })}
+          </g>
+        );
+      })()}
+      {/* System cards (rendered on top of the connector lines) */}
       {systems.map((sys, i) => {
         const x = gridLeft + sys.col * (cellW + colGap) + cellW / 2;
         const y = gridTop + sys.row * (cellH + rowGap) + cellH / 2;
         return (
           <g key={i}>
-            <line
-              x1={mcpRight}
-              y1={seniaCy}
-              x2={x - cellW / 2}
-              y2={y}
-              stroke="rgba(10,42,28,0.28)"
-              strokeWidth={1.5}
-              strokeDasharray="4 6"
-            />
             <rect
               x={x - cellW / 2}
               y={y - cellH / 2}
@@ -1761,6 +1806,32 @@ const LoopIcon = ({ size = 16, stroke = 1.8, color }: { size?: number; stroke?: 
   </svg>
 );
 
+const CirclePlusIcon = ({ size = 16, stroke = 1.8, color }: { size?: number; stroke?: number; color?: string }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    style={{ display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <circle
+      cx="12"
+      cy="12"
+      r="9"
+      stroke={color ?? 'currentColor'}
+      strokeWidth={stroke}
+      fill="none"
+    />
+    <path
+      d="M12 7.5v9M7.5 12h9"
+      stroke={color ?? 'currentColor'}
+      strokeWidth={stroke}
+      strokeLinecap="round"
+      fill="none"
+    />
+  </svg>
+);
+
 const Architecture: Page = () => (
   <div
     style={{
@@ -2043,7 +2114,7 @@ const BrokenChain = () => {
                   strokeDasharray="4 8"
                 />
                 <g transform={`translate(${W / 2}, ${(y + stepH + next) / 2})`}>
-                  <circle r={11} fill="rgba(232,154,106,0.18)" stroke={palette.warn} strokeWidth={1.5} />
+                  <circle r={11} fill="rgba(10,42,28,0.10)" stroke={palette.warn} strokeWidth={1.5} />
                   <text
                     textAnchor="middle"
                     y={4}
@@ -2233,7 +2304,7 @@ const IntegrationUnlock: Page = () => (
     >
       {[
         { k: '+ MCP tools', v: 'Más plataformas conectadas, más eslabones que Senia puede ejecutar.', val: '+' as const },
-        { k: '+ Skills activas', v: 'Más casos de uso que Senia reconoce y resuelve sin intervención manual.', val: '×' as const },
+        { k: '+ Skills activas', v: 'Más casos de uso que Senia reconoce y resuelve sin intervención manual.', val: 'circlePlus' as const },
         { k: '+ Vueltas/día', v: 'Más decisiones por unidad de tiempo. El flywheel gira más rápido.', val: 'loop' as const },
       ].map((it, i) => (
         <div
@@ -2265,6 +2336,8 @@ const IntegrationUnlock: Page = () => (
           >
             {it.val === 'loop' ? (
               <LoopIcon size={92} stroke={2.2} color="rgba(124,240,168,0.45)" />
+            ) : it.val === 'circlePlus' ? (
+              <CirclePlusIcon size={92} stroke={2.2} color="rgba(124,240,168,0.45)" />
             ) : (
               it.val
             )}
