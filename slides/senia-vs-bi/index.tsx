@@ -1805,6 +1805,32 @@ const LoopIcon = ({ size = 16, stroke = 1.8, color }: { size?: number; stroke?: 
   </svg>
 );
 
+const CirclePlusIcon = ({ size = 16, stroke = 1.8, color }: { size?: number; stroke?: number; color?: string }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    style={{ display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <circle
+      cx="12"
+      cy="12"
+      r="9"
+      stroke={color ?? 'currentColor'}
+      strokeWidth={stroke}
+      fill="none"
+    />
+    <path
+      d="M12 7.5v9M7.5 12h9"
+      stroke={color ?? 'currentColor'}
+      strokeWidth={stroke}
+      strokeLinecap="round"
+      fill="none"
+    />
+  </svg>
+);
+
 const Architecture: Page = () => (
   <div
     style={{
@@ -2277,7 +2303,7 @@ const IntegrationUnlock: Page = () => (
     >
       {[
         { k: '+ MCP tools', v: 'Más plataformas conectadas, más eslabones que Senia puede ejecutar.', val: '+' as const },
-        { k: '+ Skills activas', v: 'Más casos de uso que Senia reconoce y resuelve sin intervención manual.', val: '×' as const },
+        { k: '+ Skills activas', v: 'Más casos de uso que Senia reconoce y resuelve sin intervención manual.', val: 'circlePlus' as const },
         { k: '+ Vueltas/día', v: 'Más decisiones por unidad de tiempo. El flywheel gira más rápido.', val: 'loop' as const },
       ].map((it, i) => (
         <div
@@ -2309,6 +2335,8 @@ const IntegrationUnlock: Page = () => (
           >
             {it.val === 'loop' ? (
               <LoopIcon size={92} stroke={2.2} color="rgba(124,240,168,0.45)" />
+            ) : it.val === 'circlePlus' ? (
+              <CirclePlusIcon size={92} stroke={2.2} color="rgba(124,240,168,0.45)" />
             ) : (
               it.val
             )}
