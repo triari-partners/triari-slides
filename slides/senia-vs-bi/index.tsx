@@ -1318,21 +1318,65 @@ const McpDiagram = () => {
         </text>
       </g>
 
-      {/* MCP → each system */}
+      {/*
+        MCP → systems: route through a vertical manifold just before the grid
+        so connector lines never cross other cards on their way to a target.
+        Connector layer is rendered first, then all cards on top, so the
+        terminating segment never visually intrudes on the destination card.
+      */}
+      {(() => {
+        const trunkX = gridLeft - 36;
+        const topCardY = gridTop + cellH / 2;
+        const bottomCardY = gridTop + cellH + rowGap + cellH / 2;
+        const lineColor = 'rgba(10,42,28,0.28)';
+        return (
+          <g>
+            {/* MCP right edge → trunk */}
+            <line
+              x1={mcpRight}
+              y1={seniaCy}
+              x2={trunkX}
+              y2={seniaCy}
+              stroke={lineColor}
+              strokeWidth={1.5}
+              strokeDasharray="4 6"
+            />
+            {/* Vertical trunk between the two row centers */}
+            <line
+              x1={trunkX}
+              y1={topCardY}
+              x2={trunkX}
+              y2={bottomCardY}
+              stroke={lineColor}
+              strokeWidth={1.5}
+              strokeDasharray="4 6"
+            />
+            {/* Branches into each card's left edge */}
+            {systems.map((sys, i) => {
+              const x = gridLeft + sys.col * (cellW + colGap) + cellW / 2;
+              const y = gridTop + sys.row * (cellH + rowGap) + cellH / 2;
+              return (
+                <line
+                  key={`branch-${i}`}
+                  x1={trunkX}
+                  y1={y}
+                  x2={x - cellW / 2}
+                  y2={y}
+                  stroke={lineColor}
+                  strokeWidth={1.5}
+                  strokeDasharray="4 6"
+                />
+              );
+            })}
+          </g>
+        );
+      })()}
+      {/* System cards (rendered on top of the connector lines) */}
       {systems.map((sys, i) => {
         const x = gridLeft + sys.col * (cellW + colGap) + cellW / 2;
         const y = gridTop + sys.row * (cellH + rowGap) + cellH / 2;
         return (
           <g key={i}>
-            <line
-              x1={mcpRight}
-              y1={seniaCy}
-              x2={x - cellW / 2}
-              y2={y}
-              stroke="rgba(10,42,28,0.28)"
-              strokeWidth={1.5}
-              strokeDasharray="4 6"
-            />
             <rect
               x={x - cellW / 2}
               y={y - cellH / 2}
