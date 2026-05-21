@@ -35,8 +35,8 @@ const palette = {
   textMuted: 'rgba(10,42,28,0.52)',
   border: 'rgba(10,42,28,0.10)',
   borderDark: 'rgba(255,255,255,0.14)',
-  warn: '#E89A6A',
-  warnSoft: 'rgba(232,154,106,0.18)',
+  warn: 'rgba(10,42,28,0.52)',
+  warnSoft: 'rgba(10,42,28,0.10)',
 };
 
 const font = {
@@ -72,8 +72,8 @@ const styles = `
     to   { transform: rotate(360deg); }
   }
   @keyframes sv-pulseWarn {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(232,154,106,0.55); }
-    50%      { box-shadow: 0 0 0 14px rgba(232,154,106,0); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(10,42,28,0.35); }
+    50%      { box-shadow: 0 0 0 14px rgba(10,42,28,0); }
   }
   @keyframes sv-dashflow {
     to { stroke-dashoffset: -40; }
@@ -203,7 +203,7 @@ const Flywheel = ({
 
   const nodeFill = (s: NodeState) => {
     if (s === 'on') return dark ? palette.mint : palette.mint;
-    if (s === 'stuck') return dark ? palette.warnSoft : '#F8D8C5';
+    if (s === 'stuck') return dark ? palette.warnSoft : 'rgba(10,42,28,0.10)';
     return dark ? 'rgba(255,255,255,0.06)' : 'rgba(10,42,28,0.04)';
   };
   const nodeStroke = (s: NodeState) => {
@@ -2113,7 +2113,7 @@ const BrokenChain = () => {
                   strokeDasharray="4 8"
                 />
                 <g transform={`translate(${W / 2}, ${(y + stepH + next) / 2})`}>
-                  <circle r={11} fill="rgba(232,154,106,0.18)" stroke={palette.warn} strokeWidth={1.5} />
+                  <circle r={11} fill="rgba(10,42,28,0.10)" stroke={palette.warn} strokeWidth={1.5} />
                   <text
                     textAnchor="middle"
                     y={4}
