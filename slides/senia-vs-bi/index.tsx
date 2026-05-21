@@ -158,7 +158,7 @@ const Flywheel = ({
 }) => {
   const cx = size / 2;
   const cy = size / 2;
-  const r = size * 0.36;
+  const r = size * 0.405;
   const nodeR = size * 0.094;
 
   const baseStroke = dark ? 'rgba(255,255,255,0.18)' : 'rgba(10,42,28,0.18)';
@@ -249,7 +249,7 @@ const Flywheel = ({
       viewBox={`0 0 ${size} ${size}`}
       width={size}
       height={size}
-      style={{ display: 'block' }}
+      style={{ display: 'block', overflow: 'visible' }}
     >
       {/* Soft halo behind the wheel when learning is highlighted */}
       {highlightLearning && (
