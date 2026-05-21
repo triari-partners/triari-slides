@@ -584,6 +584,7 @@ const StuckPanel = ({
         letterSpacing: '0.14em',
         textTransform: 'uppercase',
         color: palette.warn,
+        fontWeight: 600,
       }}
     >
       <span
@@ -596,7 +597,7 @@ const StuckPanel = ({
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontWeight: 600,
+          fontWeight: 700,
           fontSize: 16,
         }}
       >
